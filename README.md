@@ -141,19 +141,101 @@ The following plots use the most defensible spectral information available for t
 
 ## Facial Landmark and Feature-Extraction Pipeline
 
-![Facial landmark and emotion-analysis pipeline](docs/facial_landmark_emotion_analysis_pipeline.svg)
+The complete facial-analysis pipeline used in this project is shown below. This figure mirrors the full processing diagram used in the Spanish project documentation and separates acquisition, landmark extraction, regions of interest, geometric measurements, feature construction, dataset/model processing and the future classification output.
 
-The current facial-analysis workflow includes:
+![Detailed facial landmark and emotion-analysis pipeline](docs/facial_landmark_emotion_analysis_pipeline.svg)
 
-1. RGB / NoIR image acquisition.
-2. Face detection.
-3. MediaPipe facial analysis.
-4. Selection of facial regions of interest.
-5. Landmark-coordinate extraction.
-6. Geometric measurements.
-7. Microexpression-related temporal analysis.
-8. Feature storage in the custom dataset.
-9. Future Siamese-network training and multimodal fusion.
+### Stage 1 — Multimodal Input
+
+Two synchronized visual modalities are considered:
+
+- **RGB IMX219:** conventional visible-light facial information.
+- **NoIR OV5647:** visible + near-infrared-sensitive facial information.
+
+Both channels are preserved because the objective is not to replace one modality with the other, but to compare and later combine complementary information.
+
+### Stage 2 — Face Detection and MediaPipe Face Mesh
+
+The system detects the face and applies MediaPipe facial analysis to obtain a dense facial representation. The dense facial mesh is used as the source for selecting stable points and facial regions.
+
+The project stores a reduced structured representation of **68 landmarks** for geometric analysis and dataset organization. Where available, the current laptop pipeline also stores **52 facial blendshapes**.
+
+### Stage 3 — Regions of Interest (ROI)
+
+The facial mesh is separated into regions that are especially relevant for facial expression and microexpression analysis:
+
+- Forehead.
+- Left eyebrow.
+- Right eyebrow.
+- Left eye.
+- Right eye.
+- Mouth.
+- Lip corners.
+
+These regions allow the system to measure localized facial motion instead of relying only on the full-face image.
+
+### Stage 4 — Landmark Visualization and Measurements
+
+Selected landmark coordinates are converted into measurable geometric features. A facial point is represented by:
+
+$$
+p_i=(x_i,y_i)
+$$
+
+The Euclidean distance between two landmarks is:
+
+$$
+d(p_a,p_b)=\sqrt{(x_a-x_b)^2+(y_a-y_b)^2}
+$$
+
+The diagram summarizes four representative measurements:
+
+| Feature | Example meaning |
+|---|---|
+| $d_1$ | Eyebrow-to-eye distance |
+| $d_2$ | Eye opening / horizontal or normalized eye feature |
+| $d_3$ | Mouth opening |
+| $d_4$ | Distance between lip corners |
+
+The actual dataset can include additional normalized geometric features derived from facial landmarks.
+
+Examples used during project development include eye aspect ratio, eyebrow height, inner/outer mouth opening and relative smile width.
+
+### Stage 5 — Feature Vector
+
+After normalization, the extracted values are grouped into a feature vector:
+
+$$
+\mathbf{F}=[d_1,d_2,d_3,d_4,\ldots]
+$$
+
+The feature representation may include:
+
+- Absolute landmark coordinates.
+- Normalized landmark coordinates.
+- Distances between selected landmarks.
+- Eye-opening measurements.
+- Mouth-opening measurements.
+- Eyebrow displacement.
+- Blendshape scores.
+- Temporal microexpression-related features.
+- Modality identifier and capture metadata.
+
+### Stage 6 — Dataset and Siamese Model
+
+The extracted features and associated images are stored in the multimodal dataset. RGB and NoIR samples from the same acquisition event are linked using shared identifiers.
+
+The future learning stage uses a **Siamese convolutional neural network**, where related inputs are projected into a shared embedding space. Multimodal feature fusion is then intended to combine visual, NoIR, geometric and later thermal information.
+
+### Stage 7 — Emotion Classification
+
+The final output shown in the diagram — for example **Happy, Sad and Neutral** — represents the planned classification stage after a validated training protocol is completed.
+
+At the current stage, the project should be interpreted as an **acquisition, preprocessing, facial-feature extraction and dataset-generation platform**. The repository does not claim that a final validated emotion classifier has already been trained.
+
+### Microexpression Analysis
+
+Microexpression-related processing focuses on small temporal changes in the selected ROI. The system records short-term variations in eyebrows, eyes, mouth, lip corners and other facial features so they can later be evaluated as part of the emotion-learning stage.
 
 ---
 
@@ -471,6 +553,85 @@ L=yD^2+(1-y)\max(0,m-D)^2
 $$
 
 The goal is to learn a representation space in which related multimodal patterns are closer and unrelated patterns are more separated.
+
+---
+
+## Development Work Completed
+
+The project has progressed through several hardware and software integration stages:
+
+1. **Jetson camera bring-up**
+   - IMX219 RGB acquisition through CSI / NVIDIA Argus.
+   - OV5647 NoIR integration through a custom kernel driver and Device Tree configuration.
+   - Dual-camera logical assignment using `sensor-id=0` and `sensor-id=1`.
+
+2. **NoIR acquisition and image processing**
+   - Exposure and gain tuning.
+   - External IR illumination tests.
+   - Six NoIR digital representations.
+   - Selection of **NOIR FILTER LAB v8.1** as the reference processing interface.
+
+3. **Facial-analysis experiments**
+   - Initial 68-point landmark approach.
+   - Transition toward MediaPipe for more stable facial tracking.
+   - Region-of-interest analysis for eyebrows, eyes, mouth and forehead.
+   - Storage of reduced 68-landmark geometry and facial blendshapes.
+
+4. **YOLO11n integration**
+   - Object and person detection on Jetson Nano.
+   - Local CUDA/Docker inference service.
+   - RGB and NoIR processing support.
+   - Performance measurements under Jetson Nano resource constraints.
+
+5. **Jetson–Laptop distributed architecture**
+   - Lightweight acquisition on Jetson.
+   - Preview and original-frame streaming over TCP.
+   - Laptop-side MediaPipe and dataset processing.
+   - Separate communication channels for preview, original frames and YOLO inference.
+
+6. **Custom dataset generation**
+   - Person identifiers such as `P01`, `P02`, `P03`.
+   - Multi-face capture workflow.
+   - Image and metadata storage.
+   - Excel-based structured dataset.
+   - RGB, NoIR and processed NoIR channels.
+   - Capture-distance information.
+   - Manual attributes such as glasses, beard and hair over the forehead where required by the acquisition protocol.
+
+7. **Dataset quality control**
+   - Channel-validity checks.
+   - Landmark normalization.
+   - Historical IQR-based outlier detection.
+   - `group_id` and `subject_group` fields to reduce train/validation/test leakage.
+
+8. **Driver and reproducibility documentation**
+   - OV5647 kernel-module installation notes.
+   - Mixed IMX219 + OV5647 Device Tree configuration.
+   - GStreamer validation commands.
+   - Documented JetPack / L4T / kernel environment.
+
+---
+
+## Software and Technologies
+
+The project uses or has evaluated:
+
+- Python.
+- OpenCV.
+- NVIDIA GStreamer / Argus.
+- MediaPipe.
+- Ultralytics YOLO11n.
+- NumPy.
+- OpenPyXL.
+- Pillow.
+- TCP sockets.
+- UART / serial communication.
+- Jetson.GPIO.
+- CUDA / Docker for YOLO inference.
+- I²C for the planned MLX90640 thermal integration.
+- Convolutional neural networks.
+- Siamese neural networks.
+- Computer vision and digital image processing.
 
 ---
 

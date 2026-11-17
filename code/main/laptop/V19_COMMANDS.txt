@@ -1,0 +1,114 @@
+V16.19 — DATASET QUALITY CONTROL
+=================================
+
+RUN:
+py -3.13 .\V19.py
+
+PURPOSE
+-------
+This version is based on V16.18 and preserves:
+- Cameras
+- Jetson communication
+- YOLO11n
+- Facial landmarker
+- Batch saving
+- NoIR variants
+- Microexpression data
+- Blendshapes
+- P01/P02/... assignment
+
+V16.19 adds dataset quality control before training.
+
+DATASET
+-------
+dataset_rgb_noir_micro_v16_19_calidad
+
+EXCEL:
+registro_dataset_rgb_noir_micro_v16_19_calidad.xlsx
+
+QUALITY SHEET
+-------------
+CALIDAD_DATASET
+
+For each subject and capture it stores:
+- session_id
+- group_id
+- capture_id
+- person_id
+- subject_group
+- valid_channels_count
+- valid_channels_total
+- valid_channels_ratio
+- landmark_rows
+- outlier_count
+- outlier_ratio
+- history_reference_min_n
+- quality_status
+- recommended_for_training
+
+CHANNELS
+--------
+Each subject can contain up to 8 channels:
+
+1. RGB
+2. NOIR
+3. NOIR_ORIGINAL
+4. NOIR_RED
+5. NOIR_IRCUT
+6. NOIR_BLUE
+7. NOIR_IR
+8. NOIR_UV
+
+QUALITY_STATUS
+--------------
+COMPLETE:
+8/8 channels with 68 landmarks.
+
+GOOD:
+At least 75% valid channels.
+
+PARTIAL:
+At least 50% valid channels.
+
+LOW:
+Less than 50% valid channels.
+
+REVIEW_OUTLIERS:
+Enough history exists and too many landmarks are marked as outliers.
+
+IQR OUTLIERS
+------------
+Each landmark is compared only against the historical values of the SAME landmark and SAME source.
+
+Example:
+RGB landmark 33 is compared only with previous RGB landmark-33 values.
+
+NOIR_RED landmark 33 is compared only with previous NOIR_RED landmark-33 values.
+
+RGB, NoIR and processed NoIR variants are not mixed.
+
+IQR checking starts only after at least 8 prior references exist for the same landmark/source.
+
+Formula:
+Q1 - 1.5*IQR
+Q3 + 1.5*IQR
+
+GROUP_ID / SUBJECT_GROUP
+------------------------
+group_id = capture_id
+
+All derivatives from the same acquisition share the same group_id.
+
+subject_group = Pxx
+
+This supports future TRAIN / VALIDATION / TEST splitting without accidental leakage of derivatives from the same capture.
+
+IMPORTANT
+---------
+This version does NOT automatically add final emotion labels such as:
+- happy
+- sad
+- angry
+- neutral
+
+Emotion labeling and final classifier training remain later experimental stages.

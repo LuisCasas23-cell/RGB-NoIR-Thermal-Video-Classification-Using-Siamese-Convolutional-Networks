@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# Local project configuration
+laptop_transfer_config.json
+noir_config.json
+
+# Generated datasets / captures
+dataset*/
+capturas*/
+captures*/
+*.xlsx
+*.xls
+*.csv
+*_RECUPERACION_*.xlsx
+ULTIMO_EXCEL_GUARDADO.txt
+excel_write_log.txt
+landmark_qc_history*.json
+
+# Models / binary inference artifacts
+*.pt
+*.engine
+*.onnx
+*.trt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log

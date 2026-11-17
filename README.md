@@ -121,15 +121,15 @@ The following plots use the most defensible spectral information available for t
 
 ### Sony IMX219
 
-![Sony IMX219 spectral response](docs/imx219_spectral_response_scientific.png)
+![Sony IMX219 spectral response](docs/imx219_spectral_response_scientific.svg)
 
 ### OmniVision OV5647 NoIR
 
-![OV5647 NoIR spectral response](docs/ov5647_noir_spectral_response_scientific.png)
+![OV5647 NoIR spectral response](docs/ov5647_noir_spectral_response_scientific.svg)
 
 ### IMX219 vs OV5647
 
-![IMX219 vs OV5647 spectral comparison](docs/imx219_vs_ov5647_spectral_comparison_scientific.png)
+![IMX219 vs OV5647 spectral comparison](docs/imx219_vs_ov5647_spectral_comparison_scientific.svg)
 
 ### Interpretation
 
@@ -141,7 +141,7 @@ The following plots use the most defensible spectral information available for t
 
 ## Facial Landmark and Feature-Extraction Pipeline
 
-![Facial landmark and emotion-analysis pipeline](docs/facial_landmark_emotion_analysis_pipeline.png)
+![Facial landmark and emotion-analysis pipeline](docs/facial_landmark_emotion_analysis_pipeline.svg)
 
 The current facial-analysis workflow includes:
 
@@ -523,10 +523,10 @@ The goal is to learn a representation space in which related multimodal patterns
 │       ├── source/
 │       └── tests/
 └── docs/
-    ├── imx219_spectral_response_scientific.png
-    ├── ov5647_noir_spectral_response_scientific.png
-    ├── imx219_vs_ov5647_spectral_comparison_scientific.png
-    └── facial_landmark_emotion_analysis_pipeline.png
+    ├── imx219_spectral_response_scientific.svg
+    ├── ov5647_noir_spectral_response_scientific.svg
+    ├── imx219_vs_ov5647_spectral_comparison_scientific.svg
+    └── facial_landmark_emotion_analysis_pipeline.svg
 ```
 
 ---

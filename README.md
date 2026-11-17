@@ -143,7 +143,7 @@ The following plots use the most defensible spectral information available for t
 
 The complete facial-analysis pipeline used in this project is shown below. This figure mirrors the full processing diagram used in the Spanish project documentation and separates acquisition, landmark extraction, regions of interest, geometric measurements, feature construction, dataset/model processing and the future classification output.
 
-![Detailed facial landmark and emotion-analysis pipeline](docs/facial_landmark_emotion_analysis_pipeline.png)
+![Detailed facial landmark and emotion-analysis pipeline](docs/facial_landmark_emotion_analysis_pipeline.svg.png)
 
 ### Stage 1 — Multimodal Input
 
@@ -687,7 +687,7 @@ The project uses or has evaluated:
     ├── imx219_spectral_response_scientific.svg
     ├── ov5647_noir_spectral_response_scientific.svg
     ├── imx219_vs_ov5647_spectral_comparison_scientific.svg
-    └── facial_landmark_emotion_analysis_pipeline.png
+    └── facial_landmark_emotion_analysis_pipeline.svg.png
 ```
 
 ---

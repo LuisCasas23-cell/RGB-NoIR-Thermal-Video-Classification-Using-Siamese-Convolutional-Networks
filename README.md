@@ -1,0 +1,2 @@
+# RGB-NoIR-Thermal-Video-Classification-Using-Siamese-Convolutional-Networks
+Multimodal AI project for human emotion analysis using RGB, NoIR and thermal imaging. The system runs on NVIDIA Jetson Nano, combines YOLO11n, MediaPipe facial landmarks, microexpression analysis and a custom dataset, and prepares RGB, NoIR and thermal features for future Siamese convolutional neural network training and classification. processing.
